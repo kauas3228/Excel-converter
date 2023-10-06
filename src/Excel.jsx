@@ -1,13 +1,25 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './App.css';
 import { Table } from 'react-bootstrap';
 import { read, utils } from 'xlsx';
+import { useDownloadExcel } from 'react-export-table-to-excel';
 
 
 function Excel() {
 
 
+  // Download Table
+  
+  const tableRef = useRef(null);
+
+  const {onDownload} = useDownloadExcel({
+    currentTableRef: tableRef.current,
+    filename: 'Lista de vendas',
+    sheet: 'Lista de vendas'
+  })
+
   // Onchange States
+  
   const [excelFile, setExcelFile] = useState(null);
   const [typeError, setTypeError] = useState(null);
   const [isActive, setisActive] = useState(false);
@@ -74,13 +86,14 @@ function Excel() {
 
         <div className="dropdown">
           
-          <div className="dropdown__btn" onClick={(e) => setisActive(!isActive)}>Lista</div>
+          <div className="dropdown__btn" onClick={(e) => setisActive(!isActive)}>Lista 
+          <button onClick={onDownload}>Download</button></div>
           {isActive && (
             <div className="dropdown__content">
               <div className="dropdown__item">
                 {excelData ? (tables.map(excelData => (
 
-                  <Table responsive variant='dark' striped bordered hover>
+                  <Table responsive striped bordered hover ref={tableRef}>
                     <thead>
                       <tr>
                         {Object.keys(excelData[0]).map((key) => (
